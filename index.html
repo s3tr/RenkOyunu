@@ -4,17 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mind-Eye Coordination Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f0f2f5;
-            --text-color: #333;
-            --container-bg: #ffffff;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
+            --bg-color: #1a1a2e;
+            --container-bg: #16213e;
+            --primary-color: #0f3460;
+            --accent-color: #e94560;
+            --text-color: #e0fbfc;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --border-radius: 15px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -23,15 +28,17 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             text-align: center;
+            overflow: hidden;
         }
 
         .container {
             width: 90%;
             max-width: 500px;
-            padding: 2rem;
+            padding: 2.5rem;
             background-color: var(--container-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            border: 1px solid var(--primary-color);
         }
 
         .screen {
@@ -44,39 +51,59 @@
 
         h1 {
             margin-top: 0;
-            color: #1a73e8;
+            color: var(--accent-color);
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--accent-color);
         }
 
         p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
 
         button {
-            background-color: #1a73e8;
+            background: linear-gradient(45deg, var(--accent-color), #f06a7f);
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
         }
 
         button:hover {
-            background-color: #185abc;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
         }
 
         #hud {
             display: flex;
             justify-content: space-between;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 2rem;
-            color: #5f6368;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        #instruction-text {
+            min-height: 50px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
         }
         
+        #game-area {
+            opacity: 1;
+            transition: opacity 0.3s ease-out;
+        }
+        
+        #game-area.hidden {
+            opacity: 0;
+        }
+
         #stimulus-box {
             display: flex;
             justify-content: center;
@@ -89,15 +116,15 @@
 
         #stimulus-text {
             font-size: 2.5rem;
-            font-weight: bold;
+            font-weight: 700;
             text-transform: uppercase;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.25);
         }
 
         #choices-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
         }
 
         .choice {
@@ -105,51 +132,89 @@
             height: 100px;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s ease-in-out;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 600;
             text-transform: uppercase;
-            border: 3px solid #e0e0e0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
         }
         
         .choice:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border-color: rgba(255, 255, 255, 0.5);
         }
+
+        .choice.correct {
+            animation: pulse-correct 0.5s ease;
+        }
+        .choice.incorrect {
+             animation: pulse-incorrect 0.5s ease;
+        }
+
+        @keyframes pulse-correct {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            50% { box-shadow: 0 0 20px 10px rgba(76, 175, 80, 0); }
+        }
+        @keyframes pulse-incorrect {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7); }
+            50% { box-shadow: 0 0 20px 10px rgba(229, 57, 53, 0); }
+        }
+
+        #round-start-screen {
+            font-size: 3rem;
+            font-weight: 700;
+            animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- Start Screen -->
         <div id="start-screen" class="screen active">
             <h1>Mind-Eye Game</h1>
-            <p>Test your focus and coordination. Click the correct answer before time runs out!</p>
+            <p>Test your focus! Can you beat the clock?</p>
             <button id="start-btn">Start Game</button>
         </div>
 
+        <!-- Game Screen -->
         <div id="game-screen" class="screen">
             <div id="hud">
                 <span>Score: <b id="score">0</b></span>
                 <span>Round: <b id="round">1/20</b></span>
                 <span>Time: <b id="timer">3s</b></span>
             </div>
-            <div id="stimulus-box">
-                <span id="stimulus-text"></span>
+            <p id="instruction-text"></p>
+            <div id="game-area">
+                <div id="stimulus-box">
+                    <span id="stimulus-text"></span>
+                </div>
+                <div id="choices-container">
+                    <div class="choice" data-choice-id="0"></div>
+                    <div class="choice" data-choice-id="1"></div>
+                    <div class="choice" data-choice-id="2"></div>
+                </div>
             </div>
-            <div id="choices-container">
-                <div class="choice" data-choice="1"></div>
-                <div class="choice" data-choice="2"></div>
-                <div class="choice" data-choice="3"></div>
+            <div id="round-transition" style="display: none;">
+                 <h2 id="round-start-screen"></h2>
             </div>
         </div>
 
+        <!-- End Screen -->
         <div id="end-screen" class="screen">
             <h1>Game Over!</h1>
             <p>Your final score is:</p>
-            <p id="final-score" style="font-size: 3rem; font-weight: bold; color: #1a73e8; margin: 1rem 0;"></p>
+            <p id="final-score" style="font-size: 3.5rem; font-weight: bold; color: var(--accent-color); margin: 1rem 0;"></p>
             <button id="restart-btn">Play Again</button>
         </div>
     </div>
@@ -172,17 +237,19 @@
         const startScreen = document.getElementById('start-screen');
         const gameScreen = document.getElementById('game-screen');
         const endScreen = document.getElementById('end-screen');
-
         const startBtn = document.getElementById('start-btn');
         const restartBtn = document.getElementById('restart-btn');
-
         const scoreEl = document.getElementById('score');
         const roundEl = document.getElementById('round');
         const timerEl = document.getElementById('timer');
+        const instructionText = document.getElementById('instruction-text');
+        const gameArea = document.getElementById('game-area');
         const stimulusBox = document.getElementById('stimulus-box');
         const stimulusText = document.getElementById('stimulus-text');
         const choiceElements = document.querySelectorAll('.choice');
         const finalScoreEl = document.getElementById('final-score');
+        const roundTransition = document.getElementById('round-transition');
+        const roundStartScreen = document.getElementById('round-start-screen');
 
         // Game State
         let score = 0;
@@ -193,8 +260,6 @@
         let isClickable = false;
 
         // --- Helper Functions ---
-
-        /** Shuffles an array in place */
         const shuffleArray = (array) => {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -203,24 +268,20 @@
             return array;
         };
 
-        /** Gets N unique random colors from the main list */
         const getRandomColors = (count, exclude = []) => {
-            const availableColors = COLORS.filter(c => !exclude.includes(c));
+            const availableColors = COLORS.filter(c => !exclude.some(ex => ex.name === c.name));
             return shuffleArray([...availableColors]).slice(0, count);
         };
         
-        /** Determines if black or white text is more readable on a given hex background */
         const getReadableTextColor = (hex) => {
             const r = parseInt(hex.slice(1, 3), 16);
             const g = parseInt(hex.slice(3, 5), 16);
             const b = parseInt(hex.slice(5, 7), 16);
-            // Using the luminance formula
             const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
             return luminance > 0.5 ? '#000000' : '#FFFFFF';
         };
 
         // --- Game Logic ---
-        
         const startGame = () => {
             score = 0;
             currentRound = 0;
@@ -228,32 +289,44 @@
             startScreen.classList.remove('active');
             endScreen.classList.remove('active');
             gameScreen.classList.add('active');
-            nextRound();
+            prepareNextRound();
         };
 
-        const nextRound = () => {
-            isClickable = false;
+        const prepareNextRound = () => {
             currentRound++;
-
             if (currentRound > TOTAL_ROUNDS) {
                 endGame();
                 return;
             }
 
-            roundEl.textContent = `${currentRound}/${TOTAL_ROUNDS}`;
-            
-            // Get three unique colors for the round
-            const roundColors = getRandomColors(3);
-            targetColor = roundColors[0];
-            const choices = shuffleArray(roundColors);
+            gameArea.classList.add('hidden');
+            instructionText.textContent = '';
+            roundTransition.style.display = 'block';
+            roundStartScreen.textContent = `Round ${currentRound}`;
 
-            // Determine scenario based on round number
+            setTimeout(() => {
+                roundTransition.style.display = 'none';
+                setupRound();
+                gameArea.classList.remove('hidden');
+                startTimer();
+            }, 1500);
+        };
+
+        const setupRound = () => {
+            roundEl.textContent = `${currentRound}/${TOTAL_ROUNDS}`;
+
             if (currentRound <= 10) {
-                // Scenario 1: Match the written word
-                const [boxBg, boxText] = getRandomColors(2, [targetColor]);
+                // Scenario 1: Match the written word.
+                // The choices are now the correct color, the box background color, and the text color.
+                instructionText.textContent = "Click the circle that matches the WORD";
+                const [correctColor, boxBgColor, textColor] = getRandomColors(3);
                 
-                stimulusBox.style.backgroundColor = boxBg.hex;
-                stimulusText.style.color = boxText.hex;
+                targetColor = correctColor;
+                
+                const choices = shuffleArray([correctColor, boxBgColor, textColor]);
+
+                stimulusBox.style.backgroundColor = boxBgColor.hex;
+                stimulusText.style.color = textColor.hex;
                 stimulusText.textContent = targetColor.name;
 
                 choiceElements.forEach((el, index) => {
@@ -261,14 +334,20 @@
                     el.textContent = '';
                     el.dataset.colorName = choices[index].name;
                 });
-
             } else {
-                // Scenario 2: Match the box's background color
-                const wordColor = getRandomColors(1, [targetColor])[0];
+                // Scenario 2: Match the box's background color.
+                instructionText.textContent = "Click the circle that matches the BOX COLOR";
+                // Get three distinct colors for the box background, the word, and the text style.
+                const [correctBoxColor, distractorWordColor, textColor] = getRandomColors(3);
+
+                targetColor = correctBoxColor;
                 
-                stimulusBox.style.backgroundColor = targetColor.hex;
-                stimulusText.textContent = wordColor.name;
-                stimulusText.style.color = getReadableTextColor(targetColor.hex);
+                // The choices are the three colors used in the stimulus.
+                const choices = shuffleArray([correctBoxColor, distractorWordColor, textColor]);
+                
+                stimulusBox.style.backgroundColor = targetColor.hex; // This is the correct answer
+                stimulusText.textContent = distractorWordColor.name; // This is a distractor
+                stimulusText.style.color = textColor.hex; // This is also a distractor
 
                 choiceElements.forEach((el, index) => {
                     el.style.backgroundColor = '#FFFFFF';
@@ -277,10 +356,8 @@
                     el.dataset.colorName = choices[index].name;
                 });
             }
-
-            startTimer();
         };
-
+        
         const startTimer = () => {
             clearInterval(timerInterval);
             timer = 3;
@@ -292,25 +369,34 @@
                 timerEl.textContent = `${timer}s`;
                 if (timer <= 0) {
                     clearInterval(timerInterval);
-                    handleChoice(false); // Timeout counts as wrong answer
+                    handleChoice(null); // Timeout
                 }
             }, 1000);
         };
         
-        const handleChoice = (isCorrect) => {
+        const handleChoice = (chosenElement) => {
             if (!isClickable) return;
             isClickable = false;
             clearInterval(timerInterval);
 
+            choiceElements.forEach(el => el.classList.remove('correct', 'incorrect'));
+
+            let isCorrect = false;
+            if (chosenElement) {
+                const chosenColorName = chosenElement.dataset.colorName;
+                isCorrect = chosenColorName === targetColor.name;
+            }
+
             if (isCorrect) {
                 score++;
+                chosenElement.classList.add('correct');
             } else {
                 score--;
+                if(chosenElement) chosenElement.classList.add('incorrect');
             }
             scoreEl.textContent = score;
             
-            // Give a short delay before the next round
-            setTimeout(nextRound, 500);
+            setTimeout(prepareNextRound, 700);
         };
 
         const endGame = () => {
@@ -320,19 +406,14 @@
         };
 
         // --- Event Listeners ---
-        
         startBtn.addEventListener('click', startGame);
         restartBtn.addEventListener('click', startGame);
 
         choiceElements.forEach(el => {
-            el.addEventListener('click', () => {
-                if (isClickable) {
-                    const chosenColorName = el.dataset.colorName;
-                    handleChoice(chosenColorName === targetColor.name);
-                }
-            });
+            el.addEventListener('click', () => handleChoice(el));
         });
-
     </script>
 </body>
 </html>
+
+
